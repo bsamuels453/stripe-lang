@@ -1,0 +1,95 @@
+module Main where (
+  functionA);
+
+import Test;
+
+// This is possible
+
+functionA(a, b) = a + b;
+
+// So is this, the declaration is only used to help people, you dont need the same names
+
+functionB(firstParameter : Int, secondParameter : Int) : Int
+{
+  body: (a, b) = a + b;
+};
+
+// Then, contracts kick in
+
+functionC(firstParameter : Int, secondParameter : Int) : Maybe Int
+{
+  doc_body: "This function is blablabla";
+  doc_firstParameter: "lelsadjaks";
+  doc_secondParameter: "sdkjqlwkejqlwekj";
+
+  pre: a > 0;
+  pre: b > 0;
+  post: result > 0;
+  body: (a, b) = a + b;
+}
+
+// Pattern matching
+
+functionD(a, b) =
+  match (a, b) {
+    (0  , b) => b,
+    (100, _) => 200,
+    (a  , b) => let c = a * 2
+                in a + b + c
+  };
+
+// Guard
+
+functionE(a, b) =
+  guard (a, b) {
+    a == 0    => b,
+    a == 100  => 200,
+    otherwise => a * 2
+  };
+
+// Lets
+
+functionF(a, b) =
+  let f(a) = a * 2,
+      c    = f(a),
+      d    = b * 4,
+      e    = f*f
+  in c + d + e
+
+// Lambda
+
+functionG(a, b) = map ( a : Int | a * 2; ) [2,3,4];
+
+// OOP
+
+class A
+{
+  doc: "This class contains blabla";
+  intValue : Int;
+  floatValue : Float;
+
+  inv: intValue > 0;
+
+  getDoubleInt = this.intValue * 2;
+  doubleMyInt = { this | intValue = this.intValue * 2 };
+}
+
+getNewA() = { intValue = 3, floatValue = 0.0 };
+
+doubleAInt(a) = { a | intValue = a.intValue * 2 };
+
+returnValue( aClass : A ) : Int
+returnValue(a) =
+  let newA = a.doubleMyInt
+  in newA.getDoubleInt;
+
+returnNew( aClass : A ) : A
+returnNew(a) =
+  let aVal = a.doubleMyInt
+  in { a | intValue = aVal };
+
+// Tuple, list, dict
+
+//funTuple = (1,2,3)
+//funList  = [1,2,3]
+//funDict  = {"a": 3, "b": 4, "ca": 23}

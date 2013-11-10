@@ -42,7 +42,7 @@ bindingParameterList
     ;
 
 classDecl
-    :   'class' TypeIdentifier '{' classBodyExpr* '}' ';'
+    :   'class' Identifier '{' classBodyExpr* '}' ';'
     ;
 
 functionDecl
@@ -58,11 +58,12 @@ functionParameterList
     ;
 
 classBodyExpr
-    :   'inv' '(' StringLiteral ')' '=' bodyExpr ';' #classInv
-    |   'doc' '(' StringLiteral ')' '=' bodyExpr ';' #classDoc
-    |   bindingDecl                                  #classBinding
-    |   functionDecl                                 #classFunction
-    |   fieldDecl                                    #classField
+    :   'inv' '(' StringLiteral ')' ':' bodyExpr ';'   #classInv
+    |   'doc' '(' Identifier ')' ':' StringLiteral ';' #classArgDoc
+    |   'doc' ':' StringLiteral                        #classDoc
+    |   bindingDecl                                    #classBinding
+    |   functionDecl                                   #classFunction
+    |   fieldDecl                                      #classField
     ;
 
 fieldDecl
@@ -70,10 +71,11 @@ fieldDecl
     ;
 
 functionBodyExpr
-    :   'pre'  '(' StringLiteral ')' '=' bodyExpr ';'  #functionPre
-    |   'post' '(' StringLiteral ')' '=' bodyExpr ';'  #functionPost
-    |   'doc'  '(' StringLiteral ')' '=' bodyExpr ';'  #functionDoc
-    |   'body' ':' bindingParameters? '=' bodyExpr ';' #functionBody
+    :   'pre'  '(' StringLiteral ')' ':' bodyExpr ';'   #functionPre
+    |   'post' '(' StringLiteral ')' ':' bodyExpr ';'   #functionPost
+    |   'doc'  '(' Identifier ')' ':' StringLiteral ';' #functionArgDoc
+    |   'doc' ':' StringLiteral                         #functionDoc
+    |   'body' ':' bindingParameters? '=' bodyExpr ';'  #functionBody
     ;
 
 bodyExpr
@@ -95,8 +97,8 @@ bodyExpr
     |   bodyExpr '||' bodyExpr                             #boolOrExpr
     |   bodyExpr '?' bodyExpr ':' bodyExpr                 #ternaryExpr
     |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr      #ifExpr
-    |   'match' '{' bindingDecl* '}' ';'                   #matchExpr
-    |   'guard' '{' bindingDecl* '}' ';'                   #guardExpr
+    |   'match' '{' bindingDecl* '}'                       #matchExpr
+    |   'guard' '{' bindingDecl* '}'                       #guardExpr
     |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr #letExpr
     ;
 
@@ -110,7 +112,7 @@ primary
 // Qualified names, identifier, literals
 
 qualifiedName
-    :   AnyIdentifier ('.' AnyIdentifier)*
+    :   Identifier ('.' Identifier)*
     ;
 
 qualifiedNameAndStar
@@ -127,7 +129,7 @@ typedQualifiedName
     ;
 
 typeQualifier
-    :   TypeIdentifier
+    :   Identifier
     |   typeLiteral
     |   contextedTypeQualifier
     ;
@@ -137,7 +139,7 @@ contextedTypeQualifier
     ;
 
 contextedTypeQualifierTail
-    :   TypeIdentifier
+    :   Identifier
     |   typeLiteral
     |   '(' contextedTypeQualifier ')'
     ;
@@ -527,31 +529,13 @@ IGNORE          : '_';
 
 // Identifiers
 
-AnyIdentifier
-    : StripeAnyLetter StripeLetterOrDigit*
-    ;
-
 Identifier
     : StripeLetter StripeLetterOrDigit*
     ;
 
-TypeIdentifier
-    : StripeCapLetter StripeLetterOrDigit*
-    ;
-
-fragment
-StripeCapLetter
-    : [A-Z] // This will be used for new typenames (class, struct, enum, etc)
-    ;
-
 fragment
 StripeLetter
-    : [a-z] // This will be used for functions, vars
-    ;
-
-fragment
-StripeAnyLetter
-    : [a-zA-Z] // This will be used for qualified names
+    : [a-zA-Z] // This will be used for functions, vars
     ;
 
 fragment

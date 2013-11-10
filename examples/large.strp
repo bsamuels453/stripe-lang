@@ -18,13 +18,13 @@ functionB(firstParameter : Int, secondParameter : Int) : Int
 
 functionC(firstParameter : Int, secondParameter : Int) : Maybe Int
 {
-  doc_body: "This function is blablabla";
-  doc_firstParameter: "lelsadjaks";
-  doc_secondParameter: "sdkjqlwkejqlwekj";
+  doc: "This function is blablabla";
+  doc(firstParameter): "lelsadjaks";
+  doc(secondParameter): "sdkjqlwkejqlwekj";
 
-  pre: a > 0;
-  pre: b > 0;
-  post: result > 0;
+  pre("A is greater than 0"): a > 0;
+  pre("B is greater than 0"): b > 0;
+  post("Result is greater than 0"): result > 0;
   body: (a, b) = a + b;
 }
 
@@ -62,13 +62,13 @@ functionG(a, b) = map ( a : Int | a * 2; ) [2,3,4];
 
 // OOP
 
-class A
+class Aa
 {
   doc: "This class contains blabla";
   intValue : Int;
   floatValue : Float;
 
-  inv: intValue > 0;
+  inv("Int value is always greater than 0"): intValue > 0;
 
   getDoubleInt = this.intValue * 2;
   doubleMyInt = { this | intValue = this.intValue * 2 };

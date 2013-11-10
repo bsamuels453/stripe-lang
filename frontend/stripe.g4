@@ -8,28 +8,28 @@ grammar stripe;
 
 // starting point for parsing a stripe file
 compilationUnit
-    :   moduleDeclaration? importDeclaration* bodyDeclaration* EOF
+    :   moduleDecl? importDecl* bodyDecl* EOF
     ;
 
-moduleDeclaration
-    :   'module' qualifiedName exportDeclaration? ';'
+moduleDecl
+    :   'module' qualifiedName exportDecl? ';'
     ;
 
-exportDeclaration
+exportDecl
     :   'where' '(' qualifiedNameAndStar (',' qualifiedNameAndStar)* ')'
     ;
 
-importDeclaration
+importDecl
     :   'import' qualifiedNameAndStar ';'
     ;
 
-bodyDeclaration
-    :   bindingDeclaration
-    |   classDeclaration
-    |   functionDeclaration
+bodyDecl
+    :   bindingDecl
+    |   classDecl
+    |   functionDecl
     ;
 
-bindingDeclaration
+bindingDecl
     :   Identifier bindingParameters? '=' bodyExpr ';'
     ;
 
@@ -41,11 +41,11 @@ bindingParameterList
     :   Identifier (',' Identifier)*
     ;
 
-classDeclaration
+classDecl
     :   'class' TypeIdentifier '{' classBodyExpr* '}' ';'
     ;
 
-functionDeclaration
+functionDecl
     :   Identifier functionParameters? ':' typeQualifier '{' functionBodyExpr* '}' ';'
     ;
 
@@ -58,46 +58,46 @@ functionParameterList
     ;
 
 classBodyExpr
-    :   'inv' '(' StringLiteral ')' '=' bodyExpr ';'
-    |   'doc' '(' StringLiteral ')' '=' bodyExpr ';'
-    |   bindingDeclaration
-    |   functionDeclaration
-    |   fieldDeclaration
+    :   'inv' '(' StringLiteral ')' '=' bodyExpr ';' #classInv
+    |   'doc' '(' StringLiteral ')' '=' bodyExpr ';' #classDoc
+    |   bindingDecl                                  #classBinding
+    |   functionDecl                                 #classFunction
+    |   fieldDecl                                    #classField
     ;
 
-fieldDeclaration
+fieldDecl
     :   Identifier ':' typeQualifier ';'
     ;
 
 functionBodyExpr
-    :   'pre'  '(' StringLiteral ')' '=' bodyExpr ';'
-    |   'post' '(' StringLiteral ')' '=' bodyExpr ';'
-    |   'doc'  '(' StringLiteral ')' '=' bodyExpr ';'
-    |   'body' ':' bindingParameters? '=' bodyExpr ';'
+    :   'pre'  '(' StringLiteral ')' '=' bodyExpr ';'  #functionPre
+    |   'post' '(' StringLiteral ')' '=' bodyExpr ';'  #functionPost
+    |   'doc'  '(' StringLiteral ')' '=' bodyExpr ';'  #functionDoc
+    |   'body' ':' bindingParameters? '=' bodyExpr ';' #functionBody
     ;
 
 bodyExpr
-    :   primary
-    |   bodyExpr '.' Identifier
-    |   bodyExpr '[' bodyExpr ']'
-    |   bodyExpr '(' bodyExpr? ')'
+    :   primary                                            #primaryExpr
+    |   bodyExpr '.' Identifier                            #elementExpr
+    //|   bodyExpr '[' bodyExpr ']' TODO not sure, array?
+    |   bodyExpr '(' bodyExpr? ')'                         #funCallExpr
     //|   bodyExpr ':' type TODO not sure
-    |   ('~'|'!') bodyExpr
-    |   bodyExpr ('*'|'/'|'%') bodyExpr
-    |   bodyExpr ('+'|'-') bodyExpr
-    |   bodyExpr ('<''<'|'>''>') bodyExpr
-    |   bodyExpr ('<='|'>='|'>'|'<') bodyExpr
-    |   bodyExpr ('=='|'!=') bodyExpr
-    |   bodyExpr '&' bodyExpr
-    |   bodyExpr '^' bodyExpr
-    |   bodyExpr '|' bodyExpr
-    |   bodyExpr '&&' bodyExpr
-    |   bodyExpr '||' bodyExpr
-    |   bodyExpr '?' bodyExpr ':' bodyExpr
-    |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr
-    |   'match' '{' bindingDeclaration* '}' ';'
-    |   'guard' '{' bindingDeclaration* '}' ';'
-    |   'let' bindingDeclaration (',' bindingDeclaration)* 'in' bodyExpr
+    //|   ('~'|'!') bodyExpr TODO not sure
+    |   bodyExpr ('*'|'/'|'%') bodyExpr                    #mulExpr
+    |   bodyExpr ('+'|'-') bodyExpr                        #addExpr
+    |   bodyExpr ('<''<'|'>''>') bodyExpr                  #bitshiftExpr
+    |   bodyExpr ('<='|'>='|'>'|'<') bodyExpr              #boolCompareExpr
+    |   bodyExpr ('=='|'!=') bodyExpr                      #boolEqExpr
+    |   bodyExpr '&' bodyExpr                              #binAndExpr
+    |   bodyExpr '^' bodyExpr                              #binXorExpr
+    |   bodyExpr '|' bodyExpr                              #binOrExpr
+    |   bodyExpr '&&' bodyExpr                             #boolAndExpr
+    |   bodyExpr '||' bodyExpr                             #boolOrExpr
+    |   bodyExpr '?' bodyExpr ':' bodyExpr                 #ternaryExpr
+    |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr      #ifExpr
+    |   'match' '{' bindingDecl* '}' ';'                   #matchExpr
+    |   'guard' '{' bindingDecl* '}' ';'                   #guardExpr
+    |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr #letExpr
     ;
 
 primary
@@ -528,7 +528,7 @@ IGNORE          : '_';
 // Identifiers
 
 AnyIdentifier
-    : StripeLetterOrDigit*
+    : StripeAnyLetter StripeLetterOrDigit*
     ;
 
 Identifier
@@ -550,6 +550,11 @@ StripeLetter
     ;
 
 fragment
+StripeAnyLetter
+    : [a-zA-Z] // This will be used for qualified names
+    ;
+
+fragment
 StripeLetterOrDigit
     : [a-zA-Z0-9_] // This will be any other chatacter in an identifier
     ;
@@ -567,3 +572,4 @@ COMMENT
 LINE_COMMENT
     : '//' ~[\r\n]* -> skip
     ;
+

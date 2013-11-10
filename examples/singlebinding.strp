@@ -1,0 +1,9 @@
+module Main where (
+  functionA);
+
+import Test;
+
+// This is possible
+
+functionA(a, b) = a + b;
+functionB = 3 + 3;

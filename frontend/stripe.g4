@@ -24,37 +24,25 @@ importDecl
     ;
 
 bodyDecl
-    :   bindingDecl
-    |   classDecl
-    |   functionDecl
+    :   bindingDecl ';'
+    |   classDecl ';'
+    |   functionDecl ';'
     ;
 
 bindingDecl
-    :   Identifier bindingParameters? '=' bodyExpr ';'
+    :   Identifier unidentifiedBindingDecl
     ;
 
-bindingParameters
-    :   '(' bindingParameterList? ')'
-    ;
-
-bindingParameterList
-    :   Identifier (',' Identifier)*
+unidentifiedBindingDecl
+    : parameters? '=' bodyExpr
     ;
 
 classDecl
-    :   'class' Identifier '{' classBodyExpr* '}' ';'
+    :   'class' Identifier '{' classBodyExpr* '}' 
     ;
 
 functionDecl
-    :   Identifier functionParameters? ':' typeQualifier '{' functionBodyExpr* '}' ';'
-    ;
-
-functionParameters
-    :   '(' functionParameterList? ')'
-    ;
-
-functionParameterList
-    :   typedQualifiedName? (',' typedQualifiedName)*
+    :   Identifier typedParameters? ':' typeQualifier '{' functionBodyExpr* '}'
     ;
 
 classBodyExpr
@@ -74,32 +62,48 @@ functionBodyExpr
     :   'pre'  '(' StringLiteral ')' ':' bodyExpr ';'   #functionPre
     |   'post' '(' StringLiteral ')' ':' bodyExpr ';'   #functionPost
     |   'doc'  '(' Identifier ')' ':' StringLiteral ';' #functionArgDoc
-    |   'doc' ':' StringLiteral                         #functionDoc
-    |   'body' ':' bindingParameters? '=' bodyExpr ';'  #functionBody
+    |   'doc' ':' StringLiteral ';'                     #functionDoc
+    |   'body' ':' parameters? '=' bodyExpr ';'         #functionBody
     ;
 
 bodyExpr
-    :   primary                                            #primaryExpr
-    |   bodyExpr '.' Identifier                            #elementExpr
+    :   primary                                             #primaryExpr
+    |   bodyExpr '.' Identifier                             #elementExpr
     //|   bodyExpr '[' bodyExpr ']' TODO not sure, array?
-    |   bodyExpr '(' bodyExpr? ')'                         #funCallExpr
+    |   bodyExpr '(' bodyExpr? ')'                          #funCallExpr
     //|   bodyExpr ':' type TODO not sure
     //|   ('~'|'!') bodyExpr TODO not sure
-    |   bodyExpr ('*'|'/'|'%') bodyExpr                    #mulExpr
-    |   bodyExpr ('+'|'-') bodyExpr                        #addExpr
-    |   bodyExpr ('<''<'|'>''>') bodyExpr                  #bitshiftExpr
-    |   bodyExpr ('<='|'>='|'>'|'<') bodyExpr              #boolCompareExpr
-    |   bodyExpr ('=='|'!=') bodyExpr                      #boolEqExpr
-    |   bodyExpr '&' bodyExpr                              #binAndExpr
-    |   bodyExpr '^' bodyExpr                              #binXorExpr
-    |   bodyExpr '|' bodyExpr                              #binOrExpr
-    |   bodyExpr '&&' bodyExpr                             #boolAndExpr
-    |   bodyExpr '||' bodyExpr                             #boolOrExpr
-    |   bodyExpr '?' bodyExpr ':' bodyExpr                 #ternaryExpr
-    |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr      #ifExpr
-    |   'match' '{' bindingDecl* '}'                       #matchExpr
-    |   'guard' '{' bindingDecl* '}'                       #guardExpr
-    |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr #letExpr
+    |   bodyExpr ('*'|'/'|'%') bodyExpr                     #mulExpr
+    |   bodyExpr ('+'|'-') bodyExpr                         #addExpr
+    |   bodyExpr ('<''<'|'>''>') bodyExpr                   #bitshiftExpr
+    |   bodyExpr ('<='|'>='|'>'|'<') bodyExpr               #boolCompareExpr
+    |   bodyExpr ('=='|'!=') bodyExpr                       #boolEqExpr
+    |   bodyExpr '&' bodyExpr                               #binAndExpr
+    |   bodyExpr '^' bodyExpr                               #binXorExpr
+    |   bodyExpr '|' bodyExpr                               #binOrExpr
+    |   bodyExpr '&&' bodyExpr                              #boolAndExpr
+    |   bodyExpr '||' bodyExpr                              #boolOrExpr
+    |   bodyExpr '?' bodyExpr ':' bodyExpr                  #ternaryExpr
+    |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr       #ifExpr
+    |   'match' parameters '{' unidentifiedBindingDecl* '}' #matchExpr
+    |   'guard' parameters '{' unidentifiedBindingDecl* '}' #guardExpr
+    |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr  #letExpr
+    ;
+
+matchEntryList
+    :   matchEntry (',' matchEntry)*
+    ;
+
+matchEntry
+    :   parametersValAndIgnore '=>' bodyDecl
+    ;
+
+guardEntryList
+    :   guardEntry (',' guardEntry)*
+    ;
+
+guardEntry
+    :   bodyExpr '=>' bodyExpr
     ;
 
 primary
@@ -109,7 +113,31 @@ primary
     |   Identifier
     ;
 
-// Qualified names, identifier, literals
+// Params, qualified names, identifier, literals
+
+parameters
+    :   '(' parameterList? ')'
+    ;
+
+parameterList
+    :   qualifiedName (',' qualifiedName)*
+    ;
+
+parametersValAndIgnore
+    :   '(' parameterValAndIgnoreList? ')'
+    ;
+
+parameterValAndIgnoreList
+    :   qualifiedNameValAndIgnore (',' qualifiedNameValAndIgnore)*
+    ;
+
+typedParameters
+    :   '(' typedParameterList? ')'
+    ;
+
+typedParameterList
+    :   typedQualifiedName (',' typedQualifiedName)*
+    ;
 
 qualifiedName
     :   Identifier ('.' Identifier)*
@@ -119,9 +147,11 @@ qualifiedNameAndStar
     :   qualifiedName ('.' '*')?
     ;
 
-qualifiedNameOrUnderscore
+qualifiedNameValAndIgnore
     :   qualifiedName
     |   '_'
+    |   literal
+    |   contextLiteral
     ;
 
 typedQualifiedName

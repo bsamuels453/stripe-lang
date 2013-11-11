@@ -48,14 +48,14 @@ functionDecl
 classBodyExpr
     :   'inv' '(' StringLiteral ')' ':' bodyExpr ';'   #classInv
     |   'doc' '(' Identifier ')' ':' StringLiteral ';' #classArgDoc
-    |   'doc' ':' StringLiteral                        #classDoc
-    |   bindingDecl                                    #classBinding
-    |   functionDecl                                   #classFunction
-    |   fieldDecl                                      #classField
+    |   'doc' ':' StringLiteral ';'                    #classDoc
+    |   bindingDecl ';'                                #classBinding
+    |   functionDecl ';'                               #classFunction
+    |   fieldDecl ';'                                  #classField
     ;
 
 fieldDecl
-    :   Identifier ':' typeQualifier ';'
+    :   Identifier ':' typeQualifier
     ;
 
 functionBodyExpr
@@ -85,9 +85,10 @@ bodyExpr
     |   bodyExpr '||' bodyExpr                              #boolOrExpr
     |   bodyExpr '?' bodyExpr ':' bodyExpr                  #ternaryExpr
     |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr       #ifExpr
-    |   'match' parameters '{' unidentifiedBindingDecl* '}' #matchExpr
-    |   'guard' parameters '{' unidentifiedBindingDecl* '}' #guardExpr
+    |   'match' parameters '{' matchEntryList* '}'          #matchExpr
+    |   'guard' parameters '{' guardEntryList* '}'          #guardExpr
     |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr  #letExpr
+    |   '{' primary '|' makeObjList* '}'                    #makeObjExpr
     ;
 
 matchEntryList
@@ -95,7 +96,7 @@ matchEntryList
     ;
 
 matchEntry
-    :   parametersValAndIgnore '=>' bodyDecl
+    :   parametersValAndIgnore '=>' bodyExpr
     ;
 
 guardEntryList
@@ -104,6 +105,14 @@ guardEntryList
 
 guardEntry
     :   bodyExpr '=>' bodyExpr
+    ;
+
+makeObjList
+    :   makeObjEntry (',' makeObjEntry)*
+    ;    
+
+makeObjEntry
+    :   Identifier '<=' bodyExpr
     ;
 
 primary
@@ -443,11 +452,13 @@ BooleanLiteral
 MaybeLiteral
     :   'Just'
     |   'Nothing'
+    |   'Maybe'
     ;
 
 EitherLiteral
     :   'Left'
     |   'Right'
+    |   'Either'
     ;
 
 // Character Literals

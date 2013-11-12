@@ -38,7 +38,7 @@ unidentifiedBindingDecl
     ;
 
 classDecl
-    :   'class' Identifier '{' classBodyExpr* '}' 
+    :   'class' Identifier '{' classBodyExpr* '}'
     ;
 
 functionDecl
@@ -109,7 +109,7 @@ guardEntry
 
 makeObjList
     :   makeObjEntry (',' makeObjEntry)*
-    ;    
+    ;
 
 makeObjEntry
     :   Identifier '<=' bodyExpr
@@ -444,6 +444,24 @@ HexSignificand
 BooleanLiteral
     :   'True'
     |   'False'
+    ;
+
+// Containers Literals, ignore should never be used here tho, TODO split em
+
+TupleLiteral
+    :   '(' parametersValAndIgnore? ')'
+    ;
+
+ListLiteral
+    :   '[' parametersValAndIgnore? ']'
+    ;
+
+DictLiteral
+    :   '{' DictLiteralEntry? (',' DictLiteralEntry)* '}'
+    ;
+
+DictLiteralEntry
+    :   parametersValAndIgnore ':' parametersValAndIgnore
     ;
 
 // Context literals

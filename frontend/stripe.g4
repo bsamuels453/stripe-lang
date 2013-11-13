@@ -11,59 +11,93 @@ compilationUnit
     :   moduleDecl? importDecl* bodyDecl* EOF
     ;
 
+// Three possible top-level declarations
+
 moduleDecl
     :   'module' qualifiedName exportDecl? ';'
     ;
+
+importDecl
+    :   'import' qualifiedNameAndStar ';'
+    |   'import' qualifiedName 'as' Identifier ';'
+    ;
+
+bodyDecl
+    :   annotationList? annotableDecl ';'
+    ;
+
+// Content
+// Export
 
 exportDecl
     :   'where' '(' qualifiedNameAndStar (',' qualifiedNameAndStar)* ')'
     ;
 
-importDecl
-    :   'import' qualifiedNameAndStar ';'
+// Annotations
+
+annotationList
+    :   annotation (',' annotation)*
     ;
 
-bodyDecl
-    :   bindingDecl ';'
-    |   classDecl ';'
-    |   functionDecl ';'
+annotation
+    :   '@' annotationType ','
+    ;
+        
+annotationType
+    :   'pre'  '(' StringLiteral ')' '=' bodyExpr      #preAnnotation
+    |   'post' '(' StringLiteral ')' '=' bodyExpr      #postAnnotation
+    |   'inv'  '(' StringLiteral ')' '=' bodyExpr      #invAnnotation
+    |   'doc'  '(' Identifier?   ')' '=' StringLiteral #docAnnotation
+    ;
+
+annotableDecl
+    :   functionDecl 
+    |   structDecl
+    |   enumDecl
+    |   classDecl 
+    |   fieldDecl
+    ;
+
+// Function
+
+functionDecl
+    :   bindingDecl
     ;
 
 bindingDecl
-    :   Identifier unidentifiedBindingDecl
+    :   Identifier unnamedBindingDecl
     ;
 
-unidentifiedBindingDecl
-    : parameters? '=' bodyExpr
+unnamedBindingDecl
+    : parameterList? typeQualification? bodyExprAssign
+    ;
+
+bodyExprAssign
+    : '=' bodyExpr
     ;
 
 classDecl
-    :   'class' Identifier '{' classBodyExpr* '}'
+    :   'class' Identifier '{' bodyDecl* '}'
     ;
 
-functionDecl
-    :   Identifier typedParameters? ':' typeQualifier '{' functionBodyExpr* '}'
+structDecl
+    :   'struct' Identifier '=' '{' structBodyDecl* '}'
     ;
 
-classBodyExpr
-    :   'inv' '(' StringLiteral ')' ':' bodyExpr ';'   #classInv
-    |   'doc' '(' Identifier ')' ':' StringLiteral ';' #classArgDoc
-    |   'doc' ':' StringLiteral ';'                    #classDoc
-    |   bindingDecl ';'                                #classBinding
-    |   functionDecl ';'                               #classFunction
-    |   fieldDecl ';'                                  #classField
+structBodyDecl
+    :    structBodyMember (',' structBodyMember)*
+    ;
+
+structBodyMember
+    :   annotationList? annotableDecl
     ;
 
 fieldDecl
     :   Identifier ':' typeQualifier
     ;
 
-functionBodyExpr
-    :   'pre'  '(' StringLiteral ')' ':' bodyExpr ';'   #functionPre
-    |   'post' '(' StringLiteral ')' ':' bodyExpr ';'   #functionPost
-    |   'doc'  '(' Identifier ')' ':' StringLiteral ';' #functionArgDoc
-    |   'doc' ':' StringLiteral ';'                     #functionDoc
-    |   'body' ':' parameters? '=' bodyExpr ';'         #functionBody
+enumDecl
+    :   'enum' Identifier '=' Identifier (',' Identifier)*
     ;
 
 bodyExpr
@@ -85,26 +119,26 @@ bodyExpr
     |   bodyExpr '||' bodyExpr                              #boolOrExpr
     |   bodyExpr '?' bodyExpr ':' bodyExpr                  #ternaryExpr
     |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr       #ifExpr
-    |   'match' parameters '{' matchEntryList* '}'          #matchExpr
-    |   'guard' parameters '{' guardEntryList* '}'          #guardExpr
+    |   'match' parameterListOrSingle 'in' matches*         #matchExpr
+    |   'guard' parameterListOrSingle 'in' guards*          #guardExpr
     |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr  #letExpr
     |   '{' primary '|' makeObjList* '}'                    #makeObjExpr
     ;
 
-matchEntryList
+matches
     :   matchEntry (',' matchEntry)*
     ;
 
 matchEntry
-    :   parametersValAndIgnore '=>' bodyExpr
+    :   matchParameterList '=' bodyExpr
     ;
 
-guardEntryList
+guards
     :   guardEntry (',' guardEntry)*
     ;
 
 guardEntry
-    :   bodyExpr '=>' bodyExpr
+    :   bodyExpr '=' bodyExpr
     ;
 
 makeObjList
@@ -112,7 +146,7 @@ makeObjList
     ;
 
 makeObjEntry
-    :   Identifier '<=' bodyExpr
+    :   Identifier '=' bodyExpr
     ;
 
 primary
@@ -122,31 +156,48 @@ primary
     |   Identifier
     ;
 
-// Params, qualified names, identifier, literals
+// Params
 
-parameters
-    :   '(' parameterList? ')'
+parameterListOrSingle
+    :   parameterList
+    |   typeableParameterMember
     ;
 
 parameterList
-    :   qualifiedName (',' qualifiedName)*
+    :   '(' parameterMember? ')'
     ;
 
-parametersValAndIgnore
-    :   '(' parameterValAndIgnoreList? ')'
+parameterMember
+    :   typeableParameterMember (',' typeableParameterMember)*
     ;
 
-parameterValAndIgnoreList
-    :   qualifiedNameValAndIgnore (',' qualifiedNameValAndIgnore)*
+typeableParameterMember
+    :   qualifiedName typeQualification?
     ;
 
-typedParameters
-    :   '(' typedParameterList? ')'
+typeQualification
+    :   ':' typeQualifier
     ;
 
-typedParameterList
-    :   typedQualifiedName (',' typedQualifiedName)*
+// Match params
+
+matchParameterList
+    :   '(' matchMember? ')'
+    |   matchMember
     ;
+    
+matchMember
+    :   matchContent (',' matchContent)*
+    ;
+
+matchContent
+    :   qualifiedName
+    |   '_'
+    |   literal
+    |   contextLiteral
+    ;
+
+// Qualified names and types
 
 qualifiedName
     :   Identifier ('.' Identifier)*
@@ -154,17 +205,6 @@ qualifiedName
 
 qualifiedNameAndStar
     :   qualifiedName ('.' '*')?
-    ;
-
-qualifiedNameValAndIgnore
-    :   qualifiedName
-    |   '_'
-    |   literal
-    |   contextLiteral
-    ;
-
-typedQualifiedName
-    :   Identifier ':' typeQualifier
     ;
 
 typeQualifier
@@ -183,6 +223,8 @@ contextedTypeQualifierTail
     |   '(' contextedTypeQualifier ')'
     ;
 
+// Literals
+
 typeLiteral
     :   'Bool'
     |   'Byte'
@@ -198,6 +240,7 @@ typeLiteral
 contextLiteral
     :   MaybeLiteral
     |   EitherLiteral
+    |   SignalLiteral
     ;
 
 literal
@@ -248,6 +291,7 @@ GUARD         : 'guard';
 
 THIS          : 'this';
 CLASS         : 'class';
+STRUCT        : 'struct';
 
 ENUM          : 'enum';
 
@@ -262,6 +306,7 @@ IMPORT        : 'import';
 EXPORT        : 'export';
 MODULE        : 'module';
 WHERE         : 'where';
+AS            : 'as';
 
 // Integer Literals
 
@@ -447,7 +492,7 @@ BooleanLiteral
     ;
 
 // Containers Literals, ignore should never be used here tho, TODO split em
-
+/*
 TupleLiteral
     :   '(' parametersValAndIgnore? ')'
     ;
@@ -463,7 +508,7 @@ DictLiteral
 DictLiteralEntry
     :   parametersValAndIgnore ':' parametersValAndIgnore
     ;
-
+*/
 // Context literals
 // TODO figure out how to handle this, not hardcoded
 
@@ -477,6 +522,10 @@ EitherLiteral
     :   'Left'
     |   'Right'
     |   'Either'
+    ;
+
+SignalLiteral
+    :   'Signal'
     ;
 
 // Character Literals
@@ -584,6 +633,7 @@ MATCHASSIGN     : '=>';
 
 TERNARY         : '?';
 IGNORE          : '_';
+ANNOTATION      : '@';
 
 
 // Identifiers

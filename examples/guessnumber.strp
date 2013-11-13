@@ -1,0 +1,72 @@
+// { identifier | bodyExpr } = object construction from previous
+// ( identifier | bodyExpr ) = lambda
+// [ identifier | bodyExpr ] = list comprehension
+
+module guessnumber;
+
+import Console.Input as I;
+import Console.Output as O;
+import Random as R;
+
+enum State = NotPlaying, WaitForAnswer, FoundAnswer;
+
+textForState(s) =
+  match s in
+    NotPlaying    = "Press 's' to start",
+    WaitForAnswer = "Enter a number, from 0 to 9",
+    FoundAnswer   = "Congratulation, you found the right answer!";
+
+struct GameState =
+{
+  state  : State,
+  nbTry  : Int,
+  answer : Int,
+  text   : String
+};
+
+initGameState =
+{
+  state  = NotPlaying,
+  nbTry  = 0,
+  answer = 0,
+  text   = textForState(NotPlaying)
+};
+
+update(g, c) =
+  match g.state in
+    NotPlaying    = if c == 's' then { g | state  = WaitForAnswer
+                                         , nbTry  = 0
+                                         , answer = 0 // Not sure how to do random yet
+                                         , text   =
+                                              textForState(WaitForAnswer)
+                                     }
+                    else { g | text = "You pressed the wrong key." ++
+                                      textForState(g.state)
+                         },
+    WaitForAnswer = if c == g.answer then { g | state = FoundAnswer
+                                              , text  =
+                                                  textForState(FoundAnswer)
+                    else  { g | text = "Wrong, guess. " ++
+                                       textForState(g.state)
+                          },
+    FoundAnswer   = { g | state = NotPlaying
+                        , text  = textForState(NotPlaying)
+                    };
+
+step(char : Maybe Char, gameState : GameState) : GameState =
+  match char in
+    Just c  = update(gameState, c),
+    Nothing = gameState;
+
+// folds((a, b, b), b, Signal a)
+gameState = folds(step, initGameState, I.getChar);
+
+// text is set by the step function
+display(g) = g.text;
+
+// lift display from display(g : GameState) : String
+// to a signal, becoming display(g : Signal GameState) : Signal String
+main =
+  let output = lift(display, gameState)
+  in O.writeLine(output);
+// Output.writeLine takes a Signal String and will write on update

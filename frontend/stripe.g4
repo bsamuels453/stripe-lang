@@ -77,7 +77,7 @@ bodyExprAssign
     ;
 
 classDecl
-    :   'class' Identifier '{' bodyDecl* '}'
+    :   'class' Identifier '=' '{' bodyDecl* '}'
     ;
 
 structDecl
@@ -109,6 +109,7 @@ bodyExpr
     //|   ('~'|'!') bodyExpr TODO not sure
     |   bodyExpr ('*'|'/'|'%') bodyExpr                     #mulExpr
     |   bodyExpr ('+'|'-') bodyExpr                         #addExpr
+    |   bodyExpr ('++') bodyExpr                            #appendExpr
     |   bodyExpr ('<''<'|'>''>') bodyExpr                   #bitshiftExpr
     |   bodyExpr ('<='|'>='|'>'|'<') bodyExpr               #boolCompareExpr
     |   bodyExpr ('=='|'!=') bodyExpr                       #boolEqExpr
@@ -122,7 +123,7 @@ bodyExpr
     |   'match' parameterListOrSingle 'in' matches*         #matchExpr
     |   'guard' parameterListOrSingle 'in' guards*          #guardExpr
     |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr  #letExpr
-    |   '{' primary '|' makeObjList* '}'                    #makeObjExpr
+    |   '{' makeObjInit? makeObjList* '}'                   #makeObjExpr
     ;
 
 matches
@@ -139,6 +140,10 @@ guards
 
 guardEntry
     :   bodyExpr '=' bodyExpr
+    ;
+
+makeObjInit
+    :   primary '|'
     ;
 
 makeObjList
@@ -158,9 +163,10 @@ primary
 
 // Params
 
-parameterListOrSingle
+parameterListOrSingle // TODO should be value list
     :   parameterList
     |   typeableParameterMember
+    |   qualifiedName
     ;
 
 parameterList
@@ -634,7 +640,7 @@ MATCHASSIGN     : '=>';
 TERNARY         : '?';
 IGNORE          : '_';
 ANNOTATION      : '@';
-
+APPEND          : '++';
 
 // Identifiers
 

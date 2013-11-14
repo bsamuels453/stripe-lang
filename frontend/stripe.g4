@@ -42,7 +42,7 @@ annotationList
 annotation
     :   '@' annotationType ','
     ;
-        
+
 annotationType
     :   'pre'  '(' StringLiteral ')' '=' bodyExpr      #preAnnotation
     |   'post' '(' StringLiteral ')' '=' bodyExpr      #postAnnotation
@@ -51,10 +51,10 @@ annotationType
     ;
 
 annotableDecl
-    :   functionDecl 
+    :   functionDecl
     |   structDecl
     |   enumDecl
-    |   classDecl 
+    |   classDecl
     |   fieldDecl
     ;
 
@@ -131,7 +131,7 @@ matches
     ;
 
 matchEntry
-    :   matchParameterList '=' bodyExpr
+    :   valueList '=' bodyExpr
     ;
 
 guards
@@ -178,25 +178,25 @@ parameterMember
     ;
 
 typeableParameterMember
-    :   qualifiedName typeQualification?
+    :   Identifier typeQualification?
     ;
 
 typeQualification
     :   ':' typeQualifier
     ;
 
-// Match params
+// Values
 
-matchParameterList
-    :   '(' matchMember? ')'
-    |   matchMember
-    ;
-    
-matchMember
-    :   matchContent (',' matchContent)*
+valueList
+    :   '(' valueMember? ')'
+    |   valueContent
     ;
 
-matchContent
+valueMember
+    :   valueContent (',' valueContent)*
+    ;
+
+valueContent
     :   qualifiedName
     |   '_'
     |   literal

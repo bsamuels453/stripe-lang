@@ -104,7 +104,7 @@ bodyExpr
     :   valueContent                                        #valueExpr
     |   bodyExpr '.' Identifier                             #elementExpr
     //|   bodyExpr '[' bodyExpr ']' TODO not sure, array?
-    |   bodyExpr '(' valueList? ')'                         #funCallExpr
+    |   bodyExpr '(' valueMember? ')'                       #funCallExpr
     //|   bodyExpr ':' type TODO not sure
     //|   ('~'|'!') bodyExpr TODO not sure
     |   bodyExpr ('*'|'/'|'%') bodyExpr                     #mulExpr
@@ -191,7 +191,12 @@ valueContent
     |   '_'
     |   literal
     |   contextLiteral
-    |   Identifier
+    |   qualifiedName
+    |   contextedValue
+    ;
+
+contextedValue
+    :   contextLiteral valueList?
     ;
 
 // Qualified names and types
@@ -211,7 +216,7 @@ typeQualifier
     ;
 
 contextedTypeQualifier
-    :   contextLiteral contextedTypeQualifierTail+
+    :   contextTypeLiteral contextedTypeQualifierTail+
     ;
 
 contextedTypeQualifierTail
@@ -234,10 +239,15 @@ typeLiteral
     |   'Void' // TODO keep?
     ;
 
+contextTypeLiteral
+    :   'Maybe'
+    |   'Either'
+    |   'Signal'
+    ;
+
 contextLiteral
     :   MaybeLiteral
     |   EitherLiteral
-    |   SignalLiteral
     ;
 
 literal
@@ -512,17 +522,11 @@ DictLiteralEntry
 MaybeLiteral
     :   'Just'
     |   'Nothing'
-    |   'Maybe'
     ;
 
 EitherLiteral
     :   'Left'
     |   'Right'
-    |   'Either'
-    ;
-
-SignalLiteral
-    :   'Signal'
     ;
 
 // Character Literals

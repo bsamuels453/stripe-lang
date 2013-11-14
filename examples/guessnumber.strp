@@ -46,6 +46,7 @@ update(g, c) =
     WaitForAnswer = if c == g.answer then { g | state = FoundAnswer
                                               , text  =
                                                   textForState(FoundAnswer)
+                                          }
                     else  { g | text = "Wrong, guess. " ++
                                        textForState(g.state)
                           },

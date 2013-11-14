@@ -101,10 +101,10 @@ enumDecl
     ;
 
 bodyExpr
-    :   primary                                             #primaryExpr
+    :   valueContent                                        #valueExpr
     |   bodyExpr '.' Identifier                             #elementExpr
     //|   bodyExpr '[' bodyExpr ']' TODO not sure, array?
-    |   bodyExpr '(' bodyExpr? ')'                          #funCallExpr
+    |   bodyExpr '(' valueList? ')'                         #funCallExpr
     //|   bodyExpr ':' type TODO not sure
     //|   ('~'|'!') bodyExpr TODO not sure
     |   bodyExpr ('*'|'/'|'%') bodyExpr                     #mulExpr
@@ -120,8 +120,8 @@ bodyExpr
     |   bodyExpr '||' bodyExpr                              #boolOrExpr
     |   bodyExpr '?' bodyExpr ':' bodyExpr                  #ternaryExpr
     |   'if' bodyExpr 'then' bodyExpr 'else' bodyExpr       #ifExpr
-    |   'match' parameterListOrSingle 'in' matches*         #matchExpr
-    |   'guard' parameterListOrSingle 'in' guards*          #guardExpr
+    |   'match' valueList 'in' matches*                     #matchExpr
+    |   'guard' valueList 'in' guards*                      #guardExpr
     |   'let' bindingDecl (',' bindingDecl)* 'in' bodyExpr  #letExpr
     |   '{' makeObjInit? makeObjList* '}'                   #makeObjExpr
     ;
@@ -143,7 +143,7 @@ guardEntry
     ;
 
 makeObjInit
-    :   primary '|'
+    :   valueContent '|'
     ;
 
 makeObjList
@@ -154,20 +154,9 @@ makeObjEntry
     :   Identifier '=' bodyExpr
     ;
 
-primary
-    :   '(' bodyExpr ')'
-    |   'this'
-    |   literal
-    |   Identifier
-    ;
+
 
 // Params
-
-parameterListOrSingle // TODO should be value list
-    :   parameterList
-    |   typeableParameterMember
-    |   qualifiedName
-    ;
 
 parameterList
     :   '(' parameterMember? ')'
@@ -197,10 +186,12 @@ valueMember
     ;
 
 valueContent
-    :   qualifiedName
+    :   '(' bodyExpr ')'
+    |   'this'
     |   '_'
     |   literal
     |   contextLiteral
+    |   Identifier
     ;
 
 // Qualified names and types

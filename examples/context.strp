@@ -1,0 +1,4 @@
+functionTest( a : Maybe Char, b : Either Int Float) : Signal String =
+  match b in
+    Left i = i,
+    Right f = f;

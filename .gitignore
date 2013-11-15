@@ -1,4 +1,4 @@
 *~
 *.swp
-frontend/*.java
-frontend/*.tokens
+frontend/src/grammar/*.java
+frontend/src/grammar/*.tokens

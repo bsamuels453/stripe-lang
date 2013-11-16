@@ -7,7 +7,7 @@
  */
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import grammar.*;
+import frontend.grammar.*;
 
 public class Stripe {
     public static void main(String[] args) throws Exception {

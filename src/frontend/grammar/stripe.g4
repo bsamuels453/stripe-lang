@@ -34,9 +34,10 @@ exportDecl
     ;
 
 // Annotations
-
+// TODO either that, or annotation (',' annotation)* 
+//      and remove the ',' from annotation
 annotationList
-    :   annotation (',' annotation)*
+    :   annotation*
     ;
 
 annotation
@@ -47,7 +48,8 @@ annotationType
     :   'pre'  '(' StringLiteral ')' '=' bodyExpr      #preAnnotation
     |   'post' '(' StringLiteral ')' '=' bodyExpr      #postAnnotation
     |   'inv'  '(' StringLiteral ')' '=' bodyExpr      #invAnnotation
-    |   'doc'  '(' Identifier?   ')' '=' StringLiteral #docAnnotation
+    |   'doc'  '(' Identifier    ')' '=' StringLiteral #paramDocAnnotation
+    |   'doc' '=' StringLiteral                        #docAnnotation
     ;
 
 annotableDecl

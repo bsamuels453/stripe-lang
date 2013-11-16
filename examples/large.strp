@@ -9,43 +9,34 @@ functionA(a, b) = a + b;
 
 // So is this, the declaration is only used to help people, you dont need the same names
 
-functionB(firstParameter : Int, secondParameter : Int) : Int
-{
-  body: (a, b) = a + b;
-};
+functionB(a : Int, b : Int) : Int = a + b;
 
 // Then, contracts kick in
 
-functionC(firstParameter : Int, secondParameter : Int) : Maybe Int
-{
-  doc: "This function is blablabla";
-  doc(firstParameter): "lelsadjaks";
-  doc(secondParameter): "sdkjqlwkejqlwekj";
-
-  pre("A is greater than 0"): a > 0;
-  pre("B is greater than 0"): b > 0;
-  post("Result is greater than 0"): result > 0;
-  body: (a, b) = a + b;
-};
+@doc = "This function is blablabla",
+@doc(a) = "First parameter = This is added to the second parameter",
+@doc(b) = "Second parameter = This is added to the first parameter",
+@pre("A is greater than 0") = a > 0,
+@pre("B is greater than 0") = b > 0,
+@post("Result is greater than 0") = result > 0,
+functionC(a : Int, b : Int) : Maybe Int = a + b;
 
 // Pattern matching
 
 functionD(a, b) =
-  match (a, b) {
-    (0  , b) => b,
-    (100, _) => 200,
-    (a  , b) => let c = a * 2
-                in a + b + c
-  };
+  match (a, b) in
+    (0  , b) = b,
+    (100, _) = 200,
+    (a  , b) = let c = a * 2
+               in a + b + c;
 
 // Guard
 
 functionE(a, b) =
-  guard (a, b) {
-    a == 0    => b,
-    a == 100  => 200,
-    otherwise => a * 2
-  };
+  guard (a, b) in
+    a == 0    = b,
+    a == 100  = 200,
+    otherwise = a * 2;
 
 // Lets
 
@@ -61,7 +52,7 @@ functionF(a, b) =
 //functionG(a, b) = map ( a : Int | a * 2; ) [2,3,4];
 
 // OOP
-
+/*
 class A
 {
   doc: "This class contains blabla";
@@ -73,24 +64,20 @@ class A
   getDoubleInt = this.intValue * 2;
   doubleMyInt = { this | intValue <= this.intValue * 2 };
 };
+*/
+getNewA() = { A | intValue = 3
+                , floatValue = 0.0
+            };
 
-getNewA() = { A | intValue <= 3, floatValue <= 0.0 };
+doubleAInt(a) = { a | intValue = a.intValue * 2 };
 
-doubleAInt(a) = { a | intValue <= a.intValue * 2 };
+returnValue( a : A ) : Int =
+  let newA = a.doubleMyInt
+  in newA.getDoubleInt;
 
-returnValue( aClass : A ) : Int
-{
-  body: (a) =
-    let newA = a.doubleMyInt
-    in newA.getDoubleInt;
-};
-
-returnNew( aClass : A ) : A
-{
-  body: (a) =
-    let aVal = a.doubleMyInt
-    in { a | intValue <= aVal };
-};
+returnNew( a : A ) : A =
+  let aVal = a.doubleMyInt
+  in { a | intValue = aVal };
 
 // Tuple, list, dict
 

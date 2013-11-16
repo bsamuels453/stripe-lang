@@ -1,6 +1,6 @@
 *~
 *.swp
-frontend/src/grammar/*.java
-frontend/src/grammar/*.tokens
+src/frontend/grammar/*.java
+src/frontend/grammar/*.tokens
 lib/**
 out/**

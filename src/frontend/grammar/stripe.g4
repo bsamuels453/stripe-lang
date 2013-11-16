@@ -188,13 +188,13 @@ valueMember
     ;
 
 valueContent
-    :   '(' bodyExpr ')'
-    |   'this'
-    |   '_'
-    |   literal
-    |   contextLiteral
-    |   qualifiedName
-    |   contextedValue
+    :   '(' bodyExpr ')' #parenValue
+    |   'this'           #thisValue
+    |   '_'              #ignoreValue
+    |   literal          #literalValue
+    |   contextLiteral   #contextValue
+    |   qualifiedName    #nameValue
+    |   contextedValue   #contextAndValue
     ;
 
 contextedValue

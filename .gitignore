@@ -2,3 +2,5 @@
 *.swp
 frontend/src/grammar/*.java
 frontend/src/grammar/*.tokens
+lib/**
+out/**

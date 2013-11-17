@@ -6,4 +6,4 @@ alias antlr4='java -jar $ANTLR4_LOCATION'
 alias grun='java org.antlr.v4.runtime.misc.TestRig'
 
 cd src/frontend/grammar
-java -jar $ANTLR4_LOCATION -package frontend.grammar stripe.g4
+java -jar $ANTLR4_LOCATION -package frontend.grammar -visitor stripe.g4

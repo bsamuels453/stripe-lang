@@ -34,7 +34,7 @@ exportDecl
     ;
 
 // Annotations
-// TODO either that, or annotation (',' annotation)* 
+// TODO either that, or annotation (',' annotation)*
 //      and remove the ',' from annotation
 annotationList
     :   annotation*
@@ -54,8 +54,9 @@ annotationType
 
 annotableDecl
     :   functionDecl
-    |   structDecl
+    |   dataDecl
     |   enumDecl
+    |   structDecl
     |   classDecl
     |   fieldDecl
     ;
@@ -78,20 +79,20 @@ bodyExprAssign
     : '=' bodyExpr
     ;
 
+dataDecl
+    :   'data' Identifier '=' '{' dataList* '}'
+    ;
+
+dataList
+    :   fieldDecl (',' fieldDecl)*
+    ;
+
 classDecl
     :   'class' Identifier '=' '{' bodyDecl* '}'
     ;
 
 structDecl
-    :   'struct' Identifier '=' '{' structBodyDecl* '}'
-    ;
-
-structBodyDecl
-    :    structBodyMember (',' structBodyMember)*
-    ;
-
-structBodyMember
-    :   annotationList? annotableDecl
+    :   'struct' Identifier '=' '{' bodyDecl* '}'
     ;
 
 fieldDecl

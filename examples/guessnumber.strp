@@ -16,7 +16,7 @@ textForState(s) =
     WaitForAnswer = "Enter a number, from 0 to 9",
     FoundAnswer   = "Congratulation, you found the right answer!";
 
-struct GameState =
+data GameState =
 {
   state  : State,
   nbTry  : Int,

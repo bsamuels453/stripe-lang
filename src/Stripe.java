@@ -7,20 +7,10 @@
  */
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import frontend.grammar.*;
+import frontend.Frontend;
 
 public class Stripe {
     public static void main(String[] args) throws Exception {
-
-        ANTLRInputStream input = new ANTLRInputStream(System.in);
-
-        stripeLexer lexer = new stripeLexer(input);
-
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        stripeParser parser = new stripeParser(tokens);
-
-        ParseTree tree = parser.compilationUnit();
-        System.out.println(tree.toStringTree(parser));
+        Frontend.testAntlr();
     }
 }

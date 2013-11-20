@@ -2,7 +2,10 @@
 // ( identifier | bodyExpr ) = lambda
 // [ identifier | bodyExpr ] = list comprehension
 
-module guessnumber;
+module guessnumber where (
+  GameState,
+  State
+);
 
 import Console.Input as I;
 import Console.Output as O;

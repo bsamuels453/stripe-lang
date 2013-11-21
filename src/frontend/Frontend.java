@@ -16,13 +16,14 @@ package frontend;
  *
  */
 
+import frontend.visitors.ModuleVisitor;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import frontend.grammar.*;
 
 public class Frontend {
-    public void translate() throws Exception {
-        ANTLRInputStream input = new ANTLRInputStream(System.in);
+    public void translate(String file) throws Exception {
+        ANTLRFileStream input = new ANTLRFileStream(file);
 
         stripeLexer lexer = new stripeLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -31,6 +32,9 @@ public class Frontend {
         // Zeroth pass will be done by Antlr
         ParseTree tree = parser.compilationUnit();
         // At this point, the syntax is valid
+
+        ModuleVisitor moduleVisitor = new ModuleVisitor();
+        moduleVisitor.visit(tree);
 
         tree = firstPass(tree);
         tree = secondPass(tree);

@@ -11,6 +11,8 @@ import frontend.Frontend;
 
 public class Stripe {
     public static void main(String[] args) throws Exception {
-        Frontend.testAntlr();
+        //Frontend.testAntlr();
+        Frontend f = new Frontend();
+        f.translate("/home/frankbro/stripe-lang/examples/guessnumber.strp");
     }
 }

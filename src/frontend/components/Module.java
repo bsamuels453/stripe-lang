@@ -13,9 +13,14 @@ import java.util.*;
 public class Module {
     private Map<String, Symbol> exportedSymbols = new HashMap<String, Symbol>();
     private String name;
+    private List<String> packages = new ArrayList<String>();
 
     public Module(String name) {
         this.name = name;
+    }
+
+    public void addPackage(String name) {
+        packages.add(name);
     }
 
     public void addExportedSymbol(String name) {

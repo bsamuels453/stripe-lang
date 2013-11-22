@@ -18,8 +18,8 @@ moduleDecl
     ;
 
 importDecl
-    :   'import' qualifiedNameAndStar ';'
-    |   'import' qualifiedName 'as' Identifier ';'
+    :   'import' qualifiedNameAndStar ';'          #standardImport
+    |   'import' qualifiedName 'as' Identifier ';' #qualifiedImport
     ;
 
 bodyDecl
@@ -209,7 +209,11 @@ qualifiedName
     ;
 
 qualifiedNameAndStar
-    :   qualifiedName ('.' '*')?
+    :   qualifiedName andStar?
+    ;
+
+andStar
+    :   '.' '*'
     ;
 
 typeQualifier

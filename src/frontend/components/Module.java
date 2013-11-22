@@ -30,4 +30,14 @@ public class Module {
         }
         exportedSymbols.put(name, null);
     }
+
+    public String toString()
+    {
+        String output = "Module : ";
+        for(String p: packages) {
+            output += p + ".";
+        }
+        output += name;
+        return output;
+    }
 }

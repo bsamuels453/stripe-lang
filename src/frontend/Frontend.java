@@ -16,6 +16,7 @@ package frontend;
  *
  */
 
+import frontend.visitors.ImportVisitor;
 import frontend.visitors.ModuleVisitor;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -35,6 +36,8 @@ public class Frontend {
 
         ModuleVisitor moduleVisitor = new ModuleVisitor();
         moduleVisitor.visit(tree);
+        ImportVisitor importVisitor = new ImportVisitor();
+        importVisitor.visit(tree);
 
         tree = firstPass(tree);
         tree = secondPass(tree);

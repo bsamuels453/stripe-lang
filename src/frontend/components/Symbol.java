@@ -10,5 +10,11 @@ package frontend.components;
 public class Symbol {
 
     boolean isExported = false;
+    boolean isImported = false;
+    String name;
+
+    public Symbol(String name) {
+        this.name = name;
+    }
 
 }

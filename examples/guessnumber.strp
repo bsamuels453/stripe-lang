@@ -9,7 +9,7 @@ module guessnumber where (
 
 import Console.Input as I;
 import Console.Output as O;
-import Random as R;
+import Random.*;
 
 enum State = NotPlaying, WaitForAnswer, FoundAnswer;
 

@@ -38,7 +38,6 @@ public class ImportVisitor extends stripeBaseVisitor<Import> {
         for(String p: packages) {
             i.addPackage(p);
         }
-        System.out.println(i.toString());
         return i;
     }
 
@@ -61,7 +60,6 @@ public class ImportVisitor extends stripeBaseVisitor<Import> {
         for(String p: packages) {
             i.addPackage(p);
         }
-        System.out.println(i.toString());
         return i;
     }
 }

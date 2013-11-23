@@ -44,8 +44,6 @@ public class Frontend {
         tree = thirdPass(tree);
         tree = forthPass(tree);
         tree = fifthPass(tree);
-
-        System.out.println(tree.toStringTree(parser));
     }
 
     // The first pass will only check that every identifiers are ok.

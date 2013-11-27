@@ -16,6 +16,8 @@ package frontend;
  *
  */
 
+import frontend.components.CompilationUnit;
+import frontend.visitors.CompilationUnitVisitor;
 import frontend.visitors.ImportVisitor;
 import frontend.visitors.ModuleVisitor;
 import org.antlr.v4.runtime.*;
@@ -34,10 +36,8 @@ public class Frontend {
         ParseTree tree = parser.compilationUnit();
         // At this point, the syntax is valid
 
-        ModuleVisitor moduleVisitor = new ModuleVisitor();
-        moduleVisitor.visit(tree);
-        ImportVisitor importVisitor = new ImportVisitor();
-        importVisitor.visit(tree);
+        CompilationUnitVisitor cuv = new CompilationUnitVisitor();
+        CompilationUnit cu = cuv.visit(tree);
 
         tree = firstPass(tree);
         tree = secondPass(tree);

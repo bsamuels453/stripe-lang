@@ -1,16 +1,9 @@
 package frontend.visitors;
 
-/**
- * Created with IntelliJ IDEA.
- * User: frankbro
- * Date: 26/11/13
- * Time: 9:33 PM
- * To change this template use File | Settings | File Templates.
- */
-
 import frontend.components.CompilationUnit;
 import frontend.components.Import;
 import frontend.components.Module;
+import frontend.components.Symbol;
 import frontend.grammar.stripeBaseVisitor;
 import frontend.grammar.stripeParser;
 
@@ -27,6 +20,13 @@ public class CompilationUnitVisitor extends stripeBaseVisitor<CompilationUnit> {
         ImportVisitor importVisitor = new ImportVisitor();
         for(stripeParser.ImportDeclContext i: importCtxs) {
             imports.add(importVisitor.visit(i));
+        }
+
+        List<Symbol> symbols = new ArrayList<Symbol>();
+        List<stripeParser.BodyDeclContext> bodyCtxs = ctx.bodyDecl();
+        BodyVisitor bodyVisitor = new BodyVisitor();
+        for(stripeParser.BodyDeclContext b: bodyCtxs) {
+            symbols.add(bodyVisitor.visit(b));
         }
 
         CompilationUnit cu = new CompilationUnit();

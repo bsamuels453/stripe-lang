@@ -1,5 +1,8 @@
 package frontend.components;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: frankbro
@@ -10,8 +13,8 @@ package frontend.components;
 public class Symbol {
 
     boolean isExported = false;
-    boolean isImported = false;
     String name;
+    List<Annotation> annotations = new ArrayList<Annotation>();
 
     public Symbol(String name) {
         this.name = name;

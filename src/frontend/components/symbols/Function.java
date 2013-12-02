@@ -1,5 +1,6 @@
 package frontend.components.symbols;
 
+import frontend.components.Expr;
 import frontend.components.Symbol;
 
 /**
@@ -11,7 +12,13 @@ import frontend.components.Symbol;
  */
 public class Function extends Symbol {
 
+    Expr expr;
+
     public Function(String name) {
         super(name);
+    }
+
+    public void assign(Expr expr) {
+        this.expr = expr;
     }
 }

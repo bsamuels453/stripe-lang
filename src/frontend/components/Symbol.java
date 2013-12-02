@@ -20,4 +20,8 @@ public class Symbol {
         this.name = name;
     }
 
+    public void addAnnotation(Annotation annotation) {
+        annotations.add(annotation);
+    }
+
 }

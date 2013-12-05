@@ -22,11 +22,11 @@ To support the previous point, stripe deals with anything which is bound to chan
 
 ### 5. Contract
 
-To help interfacing with the world, stripe allows contracts to be written for functions and for classes. With the help of pre-conditions, post-conditions and invariants, the behaviour expected from the code can be explicitely stated.
+To help interfacing with the world, stripe allows contracts to be written for functions and for classes. With the help of pre-conditions, post-conditions and invariants, the behavior expected from the code can be explicitly stated.
 
 ### 6. Architecture
 
-While the design phase is usually done outside of the code implementation, stripe wants to allow the architecture to be done within the language itself.This is partly supported by the previous point where the use cases can be more easily mapped to the language.
+While the design phase is usually done outside of the code implementation, stripe wants to allow the architecture to be done within the language itself. This is partly supported by the previous point where the use cases can be more easily mapped to the language.
 
 ### 7. Ease of use
 
